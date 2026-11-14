@@ -1,0 +1,52 @@
+# Node / Next.js
+.next/
+out/
+node_modules/
+.npm/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Databases and datasets
+*.sqlite3
+*.db
+*.duckdb
+*.parquet
+*.csv
+*.zip
+*.gz
+*.tar.gz
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+pip-log.txt
+
+# Build output
+dist/
+build/
+coverage/
+
+# Secrets and local state
+*.pem
+*.key
+*.crt
+*secrets*
