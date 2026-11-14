@@ -89,4 +89,6 @@ Every data record should retain:
 
 ## Current status
 
-This catalog is initially populated with a source review and planned coverage structure. It will be expanded as the ingestion and validation pipeline is implemented.
+The first executable adapter is `backend/ingestion/football_data_csv.py`. It imports a locally supplied football-data.co.uk `E0` CSV into a normalized match JSON file and records the source file digest, source row number, and ingestion timestamp. No external files are downloaded automatically. The adapter covers final scores and match dates only; it does not provide player, event, or tactical data.
+
+The import timestamp records when the local pipeline processed the source, not when the provider originally published or the user downloaded it. Provider licensing and redistribution terms still require review before broader use.

@@ -47,11 +47,22 @@ premier-league-intelligence/
 6. Start PostgreSQL locally with Docker Compose.
 7. Run the backend and frontend.
 
+## Importing local match data
+
+The first ingestion adapter accepts a locally obtained football-data.co.uk Premier League (`E0`) CSV. Place downloaded source files in `backend/data/raw/` and run from the repository root:
+
+```powershell
+python -m backend.ingestion.football_data_csv backend\data\raw\E0.csv --season 2025-26 --output backend\data\processed\premier-league-2025-26.json
+```
+
+The importer validates dates, scores, result codes, duplicate fixtures, and league division, then writes normalized JSON with source-file SHA-256 and row provenance. It does not download data; confirm source terms before using or redistributing datasets.
+
 ## Verified local checks
 
 - `cd frontend && npm run lint` -> Passed
 - `cd frontend && npm run build` -> Passed
 - `python -m compileall backend` -> Passed
+- `python -m unittest discover -s backend/tests` -> Passed
 
 ## Notes
 

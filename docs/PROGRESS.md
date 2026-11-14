@@ -43,8 +43,13 @@ Completed:
 - Added local mock-data endpoints for overview, players, teams, tactics, transfers, and simulator payloads.
 
 Current work:
-- Define provider adapters and data schema.
-- Create reproducible ingestion and validation scripts.
+- Add provider adapters for additional sources and build a canonical database schema.
+
+Completed in this increment:
+- Added a football-data.co.uk Premier League CSV adapter with score/date/result validation, duplicate fixture detection, and per-match provenance.
+- Added a CLI to write versioned normalized JSON to the processed data layer.
+- Added unit tests for normalization, provenance, league-scope rejection, inconsistent results, and duplicate fixtures.
+- Documented the local-only import workflow and its licensing limitation.
 
 ### Phase 2
 
@@ -63,6 +68,7 @@ Acceptance: All six routes are present and the app builds successfully with the 
 - `cd frontend && npm run lint` -> Passed
 - `cd frontend && npm run build` -> Passed
 - `python -m compileall backend` -> Passed
+- `python -m unittest discover -s backend/tests` -> Passed
 - `Invoke-WebRequest http://127.0.0.1:8000/api/overview` -> Passed
 - `Invoke-WebRequest http://127.0.0.1:8000/api/players` -> Passed
 
