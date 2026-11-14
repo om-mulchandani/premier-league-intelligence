@@ -4,7 +4,7 @@ A local-first Premier League analytics platform for data engineering, player ana
 
 ## Status
 
-This repository is being initialized as a standalone local project in line with the approved Phase 0–2 execution plan. The project is currently structured for a Next.js frontend and FastAPI backend, with the data, ML, and simulation layers planned under `backend/`.
+The Phase 0 blueprint and the Phase 2 frontend shell are now in place locally. The application foundation has been built in the workspace with a pastel editorial design system and six route pages, while the data pipeline and deployment sync remain in active preparation.
 
 ## Product scope
 
@@ -33,7 +33,8 @@ premier-league-intelligence/
 ├── .env.example
 ├── .gitignore
 ├── README.md
-└── docker-compose.yml (planned)
+├── docker-compose.yml
+└── ...
 ```
 
 ## Local setup
@@ -43,14 +44,20 @@ premier-league-intelligence/
 3. Install frontend dependencies in `frontend/`.
 4. Install backend dependencies in the project environment.
 5. Configure `.env` from `.env.example`.
-6. Start PostgreSQL locally.
+6. Start PostgreSQL locally with Docker Compose.
 7. Run the backend and frontend.
+
+## Verified local checks
+
+- `cd frontend && npm run lint` -> Passed
+- `cd frontend && npm run build` -> Passed
+- `python -m compileall backend` -> Passed
 
 ## Notes
 
 - Public deployment is not authorized yet.
 - Data-source licensing and API limits must be reviewed before production use.
-- Remote GitHub sync is pending GitHub authentication.
+- Remote GitHub sync is blocked until GitHub authentication is available in the environment.
 
 ## Docs
 
