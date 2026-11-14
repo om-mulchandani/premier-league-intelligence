@@ -4,7 +4,7 @@ A local-first Premier League analytics platform for data engineering, player ana
 
 ## Status
 
-The Phase 0 blueprint and the Phase 2 frontend shell are now in place locally. The application foundation has been built in the workspace with a pastel editorial design system and six route pages, while the data pipeline and deployment sync remain in active preparation.
+The Phase 0 blueprint, the Phase 1 local API foundation, and the Phase 2 frontend shell are now in place locally. The application foundation has been built in the workspace with a pastel editorial design system, six route pages, and a working FastAPI data layer that serves mock analytics payloads while the real provider-audit pipeline remains in progress.
 
 ## Product scope
 

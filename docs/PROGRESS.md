@@ -40,6 +40,7 @@ Completed:
 - Created backend data directories and an initial FastAPI app skeleton.
 - Added PostgreSQL local infrastructure via Docker Compose.
 - Established a raw/processed/analytical folder layout.
+- Added local mock-data endpoints for overview, players, teams, tactics, transfers, and simulator payloads.
 
 Current work:
 - Define provider adapters and data schema.
@@ -61,7 +62,9 @@ Acceptance: All six routes are present and the app builds successfully with the 
 
 - `cd frontend && npm run lint` -> Passed
 - `cd frontend && npm run build` -> Passed
-- `cd backend && python -m compileall ...` -> Passed (via project root compileall on `backend`)
+- `python -m compileall backend` -> Passed
+- `Invoke-WebRequest http://127.0.0.1:8000/api/overview` -> Passed
+- `Invoke-WebRequest http://127.0.0.1:8000/api/players` -> Passed
 
 ## Current blocker
 
