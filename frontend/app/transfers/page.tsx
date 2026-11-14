@@ -1,13 +1,36 @@
-import { SectionCard } from "@/components/section-card";
+'use client';
 
-const players = [
-  { name: "M. Rashford", club: "Villa", age: 27, listed: "€55M", model: "€61M", gap: "+€6M" },
-  { name: "E. Eze", club: "Crystal Palace", age: 26, listed: "€42M", model: "€49M", gap: "+€7M" },
-  { name: "B. Saka", club: "Arsenal", age: 23, listed: "€110M", model: "€118M", gap: "+€8M" },
-  { name: "J. Bellingham", club: "Real Madrid", age: 21, listed: "€180M", model: "€171M", gap: "-€9M" },
-] as const;
+import { useEffect, useState } from "react";
+import { SectionCard } from "@/components/section-card";
+import { fetchJson } from "@/lib/api";
+
+type Transfer = {
+  name: string;
+  club: string;
+  age: number;
+  listed: number;
+  model: number;
+  gap: number;
+};
 
 export default function TransfersPage() {
+  const [players, setPlayers] = useState<Transfer[]>([]);
+
+  useEffect(() => {
+    let ignore = false;
+    fetchJson<Transfer[]>("/api/transfers")
+      .then((response) => {
+        if (!ignore) setPlayers(response);
+      })
+      .catch(() => {
+        if (!ignore) setPlayers([]);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -34,9 +57,11 @@ export default function TransfersPage() {
                   <td className="py-3 pr-4 font-medium text-[#303444]">{player.name}</td>
                   <td className="py-3 pr-4 text-[#73798A]">{player.club}</td>
                   <td className="py-3 pr-4 text-[#73798A]">{player.age}</td>
-                  <td className="py-3 pr-4 text-[#303444]">{player.listed}</td>
-                  <td className="py-3 pr-4 text-[#303444]">{player.model}</td>
-                  <td className={`py-3 font-medium ${player.gap.startsWith("-") ? "text-[#B77B7D]" : "text-[#6F927B]"}`}>{player.gap}</td>
+                  <td className="py-3 pr-4 text-[#303444]">€{player.listed}M</td>
+                  <td className="py-3 pr-4 text-[#303444]">€{player.model}M</td>
+                  <td className={`py-3 font-medium ${player.gap < 0 ? "text-[#B77B7D]" : "text-[#6F927B]"}`}>
+                    {player.gap > 0 ? `+€${player.gap}M` : `-€${Math.abs(player.gap)}M`}
+                  </td>
                 </tr>
               ))}
             </tbody>

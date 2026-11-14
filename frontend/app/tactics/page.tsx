@@ -1,4 +1,13 @@
+'use client';
+
+import { useEffect, useState } from "react";
 import { SectionCard } from "@/components/section-card";
+import { fetchJson } from "@/lib/api";
+
+type TacticsResponse = {
+  coverage: Record<string, string>;
+  formation: Array<{ position: string }>;
+};
 
 const pitchSlots = [
   ["GK", "LB", "CB", "CB", "RB"],
@@ -7,6 +16,27 @@ const pitchSlots = [
 ] as const;
 
 export default function TacticsPage() {
+  const [data, setData] = useState<TacticsResponse | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    fetchJson<TacticsResponse>("/api/tactics")
+      .then((response) => {
+        if (!ignore) setData(response);
+      })
+      .catch(() => {
+        if (!ignore) setData({ coverage: {}, formation: [] });
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  if (!data) {
+    return <div className="rounded-2xl border border-[#E5E4EC] bg-white p-6 text-sm text-[#73798A]">Loading tactical insights…</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -25,11 +55,17 @@ export default function TacticsPage() {
 
               <div className="absolute inset-0 grid place-items-center">
                 <div className="grid w-full max-w-[560px] grid-cols-5 gap-4 px-8 text-center text-xs font-semibold uppercase tracking-[0.12em] text-[#303444]">
-                  {pitchSlots.flat().map((slot) => (
-                    <div key={slot} className="flex h-12 items-center justify-center rounded-full border border-[#303444]/25 bg-white/75 shadow-sm">
-                      {slot}
-                    </div>
-                  ))}
+                  {data.formation.length > 0
+                    ? data.formation.map((slot) => (
+                        <div key={slot.position} className="flex h-12 items-center justify-center rounded-full border border-[#303444]/25 bg-white/75 shadow-sm">
+                          {slot.position}
+                        </div>
+                      ))
+                    : pitchSlots.flat().map((slot) => (
+                        <div key={slot} className="flex h-12 items-center justify-center rounded-full border border-[#303444]/25 bg-white/75 shadow-sm">
+                          {slot}
+                        </div>
+                      ))}
                 </div>
               </div>
             </div>
@@ -38,12 +74,7 @@ export default function TacticsPage() {
 
         <SectionCard title="Coverage status" description="Event-derived tactical coverage and data limitations">
           <div className="space-y-4">
-            {[
-              ["Current match coverage", "82%"],
-              ["Shot map coverage", "76%"],
-              ["Passing network coverage", "68%"],
-              ["Pressing indicators", "Limited"],
-            ].map(([label, value]) => (
+            {Object.entries(data.coverage).map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-[#E5E4EC] bg-[#F7F7FA] p-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-[#73798A]">{label}</span>

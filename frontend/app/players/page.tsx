@@ -1,14 +1,49 @@
+'use client';
+
+import { useEffect, useMemo, useState } from "react";
 import { Search, Star } from "lucide-react";
 import { SectionCard } from "@/components/section-card";
+import { fetchJson } from "@/lib/api";
 
-const players = [
-  { name: "Mohamed Salah", club: "Liverpool", position: "RW", goals: 14, assists: 9, xg: 12.7, xa: 8.1 },
-  { name: "Erling Haaland", club: "Man City", position: "ST", goals: 18, assists: 6, xg: 17.3, xa: 5.2 },
-  { name: "Bukayo Saka", club: "Arsenal", position: "RW", goals: 11, assists: 8, xg: 10.9, xa: 9.4 },
-  { name: "Rodri", club: "Man City", position: "CM", goals: 4, assists: 6, xg: 3.2, xa: 5.5 },
-] as const;
+type Player = {
+  name: string;
+  club: string;
+  position: string;
+  goals: number;
+  assists: number;
+  xg: number;
+  xa: number;
+};
 
 export default function PlayersPage() {
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+    fetchJson<Player[]>("/api/players")
+      .then((response) => {
+        if (!ignore) setPlayers(response);
+      })
+      .catch(() => {
+        if (!ignore) setPlayers([]);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const filteredPlayers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return players;
+
+    return players.filter((player) => {
+      const haystack = `${player.name} ${player.club} ${player.position}`.toLowerCase();
+      return haystack.includes(normalizedQuery);
+    });
+  }, [players, query]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -18,7 +53,7 @@ export default function PlayersPage() {
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E4EC] bg-[#F2F1F7] px-3 py-1.5 text-xs font-medium text-[#73798A]">
           <Star className="h-3.5 w-3.5 text-[#817BAF]" />
-          Demo dataset — role-aware clustering pending data validation
+          Backend payload is wired in for the directory view
         </div>
       </div>
 
@@ -27,6 +62,8 @@ export default function PlayersPage() {
           <Search className="h-4 w-4 text-[#73798A]" />
           <input
             aria-label="Filter players"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
             placeholder="Filter by club, position or player"
             className="w-full bg-transparent text-sm text-[#303444] outline-none placeholder:text-[#73798A]"
           />
@@ -46,7 +83,7 @@ export default function PlayersPage() {
               </tr>
             </thead>
             <tbody>
-              {players.map((player) => (
+              {filteredPlayers.map((player) => (
                 <tr key={player.name} className="border-b border-[#F2F1F7] last:border-b-0">
                   <td className="py-3 pr-4 font-medium text-[#303444]">{player.name}</td>
                   <td className="py-3 pr-4 text-[#73798A]">{player.club}</td>

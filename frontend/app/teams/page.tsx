@@ -1,14 +1,36 @@
+'use client';
+
+import { useEffect, useState } from "react";
 import { CircleDot, Shield, TrendingUp } from "lucide-react";
 import { SectionCard } from "@/components/section-card";
+import { fetchJson } from "@/lib/api";
 
-const teams = [
-  { club: "Liverpool", pts: 30, xg: 27.3, xga: 11.4, form: "W W D W W" },
-  { club: "Arsenal", pts: 28, xg: 24.7, xga: 13.5, form: "W D W L W" },
-  { club: "Man City", pts: 25, xg: 22.1, xga: 12.6, form: "W D W D W" },
-  { club: "Chelsea", pts: 24, xg: 21.4, xga: 15.3, form: "D W L W W" },
-] as const;
+type Team = {
+  club: string;
+  points: number;
+  xg: number;
+  xga: number;
+  form: string;
+};
 
 export default function TeamsPage() {
+  const [teams, setTeams] = useState<Team[]>([]);
+
+  useEffect(() => {
+    let ignore = false;
+    fetchJson<Team[]>("/api/teams")
+      .then((response) => {
+        if (!ignore) setTeams(response);
+      })
+      .catch(() => {
+        if (!ignore) setTeams([]);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -26,7 +48,7 @@ export default function TeamsPage() {
                   <div className="text-sm text-[#73798A]">xG {team.xg} · xGA {team.xga}</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-[#303444]">{team.pts} pts</div>
+                  <div className="font-semibold text-[#303444]">{team.points} pts</div>
                   <div className="text-xs text-[#73798A]">{team.form}</div>
                 </div>
               </div>
@@ -37,8 +59,8 @@ export default function TeamsPage() {
         <SectionCard title="Team style fingerprint" description="High-level tactical profile from normalized metrics">
           <div className="space-y-4">
             {[
-              ["Possession orientation", "76%", "legendary"],
-              ["Chance creation", "82%", "progressive"],
+              ["Possession orientation", "76%", "progressive"],
+              ["Chance creation", "82%", "dynamic"],
               ["Defensive activity", "71%", "mid-block"],
             ].map(([label, value, note]) => (
               <div key={label}>

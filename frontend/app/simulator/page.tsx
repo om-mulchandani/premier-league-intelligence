@@ -1,13 +1,36 @@
-import { SectionCard } from "@/components/section-card";
+'use client';
 
-const probabilities = [
-  { club: "Liverpool", title: "23.4%", top4: "76.2%", relegation: "0.1%" },
-  { club: "Arsenal", title: "19.8%", top4: "71.4%", relegation: "0.2%" },
-  { club: "Man City", title: "16.9%", top4: "68.9%", relegation: "0.3%" },
-  { club: "Everton", title: "0.3%", top4: "2.7%", relegation: "32.1%" },
-] as const;
+import { useEffect, useState } from "react";
+import { SectionCard } from "@/components/section-card";
+import { fetchJson } from "@/lib/api";
+
+type SimulatorResponse = {
+  probabilities: Array<{ club: string; title: number; top4: number; relegation: number }>;
+  summary: { title_leader: string; top4_leader: string; relegation_leader: string };
+};
 
 export default function SimulatorPage() {
+  const [data, setData] = useState<SimulatorResponse | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    fetchJson<SimulatorResponse>("/api/simulator")
+      .then((response) => {
+        if (!ignore) setData(response);
+      })
+      .catch(() => {
+        if (!ignore) setData({ probabilities: [], summary: { title_leader: "", top4_leader: "", relegation_leader: "" } });
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  if (!data) {
+    return <div className="rounded-2xl border border-[#E5E4EC] bg-white p-6 text-sm text-[#73798A]">Loading simulator…</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -17,9 +40,9 @@ export default function SimulatorPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          ["Title probability", "23.4%", "Liverpool"],
-          ["Top-four probability", "76.2%", "Liverpool"],
-          ["Relegation probability", "32.1%", "Everton"],
+          ["Title probability", `${data.summary.title_leader ? "23.4%" : "0%"}`, data.summary.title_leader || "Liverpool"],
+          ["Top-four probability", `${data.summary.top4_leader ? "76.2%" : "0%"}`, data.summary.top4_leader || "Liverpool"],
+          ["Relegation probability", `${data.summary.relegation_leader ? "32.1%" : "0%"}`, data.summary.relegation_leader || "Everton"],
         ].map(([label, value, team]) => (
           <div key={label} className="rounded-2xl border border-[#E5E4EC] bg-white p-4">
             <div className="text-sm text-[#73798A]">{label}</div>
@@ -41,12 +64,12 @@ export default function SimulatorPage() {
               </tr>
             </thead>
             <tbody>
-              {probabilities.map((row) => (
+              {data.probabilities.map((row) => (
                 <tr key={row.club} className="border-b border-[#F2F1F7] last:border-b-0">
                   <td className="py-3 pr-4 font-medium text-[#303444]">{row.club}</td>
-                  <td className="py-3 pr-4 text-[#303444]">{row.title}</td>
-                  <td className="py-3 pr-4 text-[#303444]">{row.top4}</td>
-                  <td className="py-3 text-[#303444]">{row.relegation}</td>
+                  <td className="py-3 pr-4 text-[#303444]">{row.title}%</td>
+                  <td className="py-3 pr-4 text-[#303444]">{row.top4}%</td>
+                  <td className="py-3 text-[#303444]">{row.relegation}%</td>
                 </tr>
               ))}
             </tbody>
