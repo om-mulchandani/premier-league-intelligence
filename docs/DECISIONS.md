@@ -18,6 +18,7 @@
 - Treat source-provenance tracking as a core requirement.
 - Avoid hardcoded 2026/27 club assumptions; use verified data-driven sources where available.
 - Preserve raw and processed data separately to maintain reproducibility.
+- Use versioned, idempotent SQL migration files as the initial PostgreSQL schema strategy; keep provider-specific normalization outside the database migration.
 
 ### GitHub workflow
 

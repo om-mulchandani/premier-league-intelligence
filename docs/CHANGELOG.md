@@ -13,3 +13,5 @@
 - Confirmed backend Python compilation and API responses pass.
 - Identified GitHub auth as the remaining blocker for remote repository sync.
 - Added a local football-data.co.uk E0 CSV ingestion adapter, normalized match JSON output, provenance tracking, and validation tests.
+- Added the initial idempotent PostgreSQL migration for match, season, team, source, and ingestion provenance data.
+- Added transactional loading of validated processed match JSON into PostgreSQL without automatic dependency installation.

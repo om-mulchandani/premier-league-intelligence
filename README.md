@@ -57,6 +57,25 @@ python -m backend.ingestion.football_data_csv backend\data\raw\E0.csv --season 2
 
 The importer validates dates, scores, result codes, duplicate fixtures, and league division, then writes normalized JSON with source-file SHA-256 and row provenance. It does not download data; confirm source terms before using or redistributing datasets.
 
+## PostgreSQL schema
+
+The initial schema migration is `backend/migrations/001_initial_schema.sql`. With the local PostgreSQL service running, apply it from PowerShell at the repository root:
+
+```powershell
+Get-Content -Raw backend\migrations\001_initial_schema.sql | docker compose exec -T postgres psql -v ON_ERROR_STOP=1 -U postgres -d premier_league_intelligence
+```
+
+The migration is safe to re-run and records its version in `schema_migrations`. It creates competition/season/team dimensions, match results, source records, ingestion runs, and per-match provenance. The CSV importer produces the validated processed JSON file; a separate loader below writes it into PostgreSQL.
+
+After importing a source CSV and applying the migration, load its normalized JSON:
+
+```powershell
+$env:DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/premier_league_intelligence"
+python -m backend.ingestion.postgres_loader backend\data\processed\premier-league-2025-26.json
+```
+
+The loader validates the payload before connecting and writes all records in one transaction. Re-running it does not duplicate matches, but records a separate ingestion run and provenance link. The database driver is listed in `backend/requirements.txt`; the command reports an error if it is unavailable and does not install it.
+
 ## Verified local checks
 
 - `cd frontend && npm run lint` -> Passed

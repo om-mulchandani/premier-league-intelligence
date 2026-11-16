@@ -92,3 +92,5 @@ Every data record should retain:
 The first executable adapter is `backend/ingestion/football_data_csv.py`. It imports a locally supplied football-data.co.uk `E0` CSV into a normalized match JSON file and records the source file digest, source row number, and ingestion timestamp. No external files are downloaded automatically. The adapter covers final scores and match dates only; it does not provide player, event, or tactical data.
 
 The import timestamp records when the local pipeline processed the source, not when the provider originally published or the user downloaded it. Provider licensing and redistribution terms still require review before broader use.
+
+The initial PostgreSQL schema is defined in `backend/migrations/001_initial_schema.sql`. It normalizes competitions, seasons, teams, matches, data sources, ingestion runs, and match provenance. `backend/ingestion/postgres_loader.py` validates the normalized JSON and loads it transactionally, including a provenance link for each row. Applying migrations and loading data require a locally running PostgreSQL instance; the schema has not been exercised against a live database in this environment.

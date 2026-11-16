@@ -50,6 +50,9 @@ Completed in this increment:
 - Added a CLI to write versioned normalized JSON to the processed data layer.
 - Added unit tests for normalization, provenance, league-scope rejection, inconsistent results, and duplicate fixtures.
 - Documented the local-only import workflow and its licensing limitation.
+- Added an idempotent initial PostgreSQL schema migration for seasons, teams, matches, data sources, ingestion runs, and match provenance.
+- Documented how to apply the migration with the local Docker Compose database.
+- Added a transactional JSON-to-PostgreSQL loader with strict dataset/provenance validation and idempotent match insertion.
 
 ### Phase 2
 
@@ -80,6 +83,6 @@ Acceptance: All six routes are present and the app builds successfully with the 
 ## Next actions
 
 - Continue Phase 1 with data ingestion and validation scripts.
-- Create database schema and provider adapter stubs.
+- Test migration and loader against a local PostgreSQL instance when Docker or PostgreSQL is available.
 - Prepare for the Group 1 checkpoint report.
 - Resume remote repository creation once GitHub authentication is available.
